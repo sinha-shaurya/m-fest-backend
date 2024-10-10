@@ -74,7 +74,6 @@ const resetPassword = async (req, res) => {
 
   res.json({ message: 'Password reset successful' });
 };
-
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -82,10 +81,15 @@ const updateProfile = async (req, res) => {
     console.log('UserID:', userId);
     console.log('Request Body:', req.body);
 
+    const isDataNotEmpty = Object.keys(req.body).length > 0;
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { data: req.body },  // Updating the Mixed type field
-      { new: true }               // Return the updated document
+      {
+        data: req.body,  // Updating the Mixed type field
+        isProfileCompleted: isDataNotEmpty ? true : false,
+      },
+      { new: true }  // Return the updated document
     );
 
     if (!updatedUser) {
