@@ -29,7 +29,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    res.json({ token: generateToken(user._id), message: 'Login successful' });
+    res.json({ token: generateToken(user._id),name: user.name, type: user.type, isProfileCompleted: user.isProfileCompleted, message: 'Login successful' });
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
