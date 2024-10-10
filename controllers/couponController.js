@@ -49,13 +49,13 @@ const getall = async (req, res) => {
 const getbyid = async (req, res) => {
   try {
     const { id } = req.params;
-  
+
     // Find the coupon by ID
     const coupon = await Coupon.findById(id);
     if (!coupon) {
       return res.status(404).json({ message: 'Coupon not found' });
     }
-  
+
     res.status(200).json(coupon);
   } catch (error) {
     res.status(500).json({
@@ -66,23 +66,41 @@ const getbyid = async (req, res) => {
 }
 
 const deleteCoupon = async (req, res) => {
-    try {
-      const { id } = req.params;
-  
-      // Find and delete the coupon by ID
-      const deletedCoupon = await Coupon.findByIdAndDelete(id);
-      console.log(deletedCoupon);
-      if (!deletedCoupon) {
-        return res.status(404).json({ message: 'Coupon not found' });
-      }
-  
-      res.status(200).json({ message: 'Coupon deleted successfully', deletedCoupon });
-    } catch (error) {
-      res.status(500).json({
-        message: 'Error deleting coupon',
-        error: error.message
-      });
-    }
-  };
+  try {
+    const { id } = req.params;
 
-module.exports = { create, getall, deleteCoupon, getbyid };
+    // Find and delete the coupon by ID
+    const deletedCoupon = await Coupon.findByIdAndDelete(id);
+    console.log(deletedCoupon);
+    if (!deletedCoupon) {
+      return res.status(404).json({ message: 'Coupon not found' });
+    }
+
+    res.status(200).json({ message: 'Coupon deleted successfully', deletedCoupon });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error deleting coupon',
+      error: error.message
+    });
+  }
+};
+
+const toggleActive = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const coupon = await Coupon.findById(id);
+    if (!coupon) {
+      return res.status(404).json({ message: 'Coupon not found' });
+    }
+    coupon.active = !coupon.active;
+    await coupon.save();
+    res.status(200).json({ message: 'Coupon status toggled successfully', coupon });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error toggling coupon status',
+      error: error.message
+    });
+  }
+}
+
+module.exports = { create, getall, deleteCoupon, getbyid, toggleActive };
