@@ -103,4 +103,20 @@ const toggleActive = async (req, res) => {
   }
 }
 
-module.exports = { create, getall, deleteCoupon, getbyid, toggleActive };
+const updateCoupon = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updatedCoupon = await Coupon.findByIdAndUpdate(id, req.body, { new: true });
+    if (!updatedCoupon) {
+      return res.status(404).json({ message: 'Coupon not found' });
+    }
+    res.status(200).json({ message: 'Coupon updated successfully', updatedCoupon });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error updating coupon',
+      error: error.message
+    });
+  }
+}
+
+module.exports = { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon };

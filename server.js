@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const authRoutes = require('./routes/authRoutes');
 const couponRoutes = require('./routes/couponRoutes');
+const linkRoutes = require('./routes/linkRoutes');
 
 dotenv.config();
 connectDB();
@@ -12,6 +13,7 @@ app.use(express.json());
 
 app.use('/api/auth', authRoutes);
 app.use('/api/coupon', couponRoutes);
+app.use('/api/link', linkRoutes);
 
 // test routes
 
