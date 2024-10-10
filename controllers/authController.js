@@ -24,7 +24,7 @@ const login = async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
-    
+
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
@@ -55,7 +55,7 @@ const forgotPassword = async (req, res) => {
 
     // Send OTP via EmailJS
     console.log(user.email);
-    await sendEmail(user.email, "Reset Password OTP", "Otp to reset pass for your AASH india app is : "+otp);
+    await sendEmail(user.email, "Reset Password OTP", "Otp to reset pass for your AASH india app is : " + otp);
 
     res.status(200).json({ message: 'OTP sent to your email' });
   } catch (error) {
@@ -75,4 +75,29 @@ const resetPassword = async (req, res) => {
   res.json({ message: 'Password reset successful' });
 };
 
-module.exports = { signup, login, signout, forgotPassword, resetPassword };
+const updateProfile = async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    console.log('UserID:', userId);
+    console.log('Request Body:', req.body);
+
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { data: req.body },  // Updating the Mixed type field
+      { new: true }               // Return the updated document
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.json(updatedUser);
+
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { signup, login, signout, forgotPassword, resetPassword, updateProfile };
