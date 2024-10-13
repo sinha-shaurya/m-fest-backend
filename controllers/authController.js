@@ -4,6 +4,8 @@ const User = require('../models/userModel');
 const crypto = require('crypto');
 const { sendEmail } = require('../utils/sendEmail');
 const { generateToken } = require('../config/jwt');
+const fs = require('fs');
+const path = require('path');
 
 const signup = async (req, res) => {
   try {
@@ -19,7 +21,6 @@ const signup = async (req, res) => {
   }
 };
 
-
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
@@ -29,12 +30,11 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    res.json({ token: generateToken(user._id),name: user.name, type: user.type, isProfileCompleted: user.isProfileCompleted, message: 'Login successful' });
+    res.json({ token: generateToken(user._id), name: user.name, type: user.type, isProfileCompleted: user.isProfileCompleted, message: 'Login successful' });
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
 };
-
 
 const signout = (req, res) => {
   // Clear JWT token or user session
@@ -74,6 +74,7 @@ const resetPassword = async (req, res) => {
 
   res.json({ message: 'Password reset successful' });
 };
+
 const updateProfile = async (req, res) => {
   try {
     const userId = req.user._id;
@@ -111,11 +112,71 @@ const getProfileData = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({data: user.data, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type});
+    res.json({ data: user.data, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type });
   } catch (error) {
     console.error('Error getting profile data:', error);
     res.status(500).json({ message: 'Server error' });
   }
 }
 
-module.exports = { signup, login, signout, forgotPassword, resetPassword, updateProfile, getProfileData };
+const uploadProfileImage = async (req, res) => {
+  if (!req.file) {
+      return res.status(400).json({ message: 'No image uploaded or invalid file type.' });
+  }
+
+  const newImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
+
+  try {
+      const user = await User.findById(req.user._id);
+      if (user && user.profileImage) {
+          const previousImagePath = path.join(__dirname, '..', user.profileImage.split('/uploads/')[1]);
+
+          // Delete the previous image file from the server
+          fs.unlink(previousImagePath, (err) => {
+              if (err) {
+                  console.error('Error deleting previous image:', err);
+              } else {
+                  console.log('Previous image deleted successfully');
+              }
+          });
+      }
+      const updatedUser = await User.findByIdAndUpdate(
+          req.user._id,
+          { profileImage: newImageUrl },
+          { new: true }
+      );
+
+      console.log({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
+      return res.json({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
+  } catch (error) {
+      console.error('Error uploading profile image:', error);
+      return res.status(500).json({ message: 'Error uploading profile image' });
+  }
+};
+
+
+const getProfileImageUrl = async (req, res) => {
+  try {
+      console.log(req.user)
+      const user = await User.findById(req.user._id).select('profileImage');
+      if (!user) {
+          return res.status(404).json({ message: 'User not found' });
+      }
+      return res.json({ profileImage: user.profileImage });
+  } catch (error) {
+      console.error('Error fetching profile image URL:', error);
+      return res.status(500).json({ message: 'Error fetching profile image URL' });
+  }
+};
+
+module.exports = {
+  signup,
+  login,
+  signout,
+  forgotPassword,
+  resetPassword,
+  updateProfile,
+  getProfileData,
+  uploadProfileImage,
+  getProfileImageUrl
+};

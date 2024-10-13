@@ -7,7 +7,8 @@ const userSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   isProfileCompleted: { type: Boolean, default: false },
   type: { type: String, required: true },
-  data: { type: mongoose.Schema.Types.Mixed, required: false }
+  data: { type: mongoose.Schema.Types.Mixed, required: false },
+  profileImage: { type: String, required:false, unique: false}
 });
 
 module.exports = mongoose.model('User', userSchema);
