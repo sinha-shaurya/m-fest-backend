@@ -35,6 +35,23 @@ const couponSchema = new mongoose.Schema({
   active: {
     type: Boolean,
     default: true
+  },
+  maxDistributions: {
+    type: Number,
+    default: 0,
+    min: 0,
+    required: false
+  },
+  currentDistributions:{
+    type: Number,
+    default: 0,
+    min: 0,
+    required: false
+  },
+  consumersId: {
+    type: [mongoose.Schema.Types.ObjectId], // list of consumer ids
+    ref: 'User', // assuming you have a 'Consumer' model or similar
+    required: false
   }
 });
 

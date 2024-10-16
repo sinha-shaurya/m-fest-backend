@@ -1,9 +1,63 @@
 const Coupon = require('../models/coupunModel');
+const User = require('../models/userModel');
+// coupun model
+// title: {
+//   type: String,
+//   required: true
+// },
+// category: {
+//   type: [String], // list of categories
+//   required: true
+// },
+// discountPercentage: {
+//   type: Number,
+//   min: 0,
+//   max: 100,
+//   required: true
+// },
+// ownerId: {
+//   type: mongoose.Schema.Types.ObjectId, // references id from another table
+//   ref: 'User', // assuming you have an 'Owner' model or similar
+//   required: true
+// },
+// validTill: {
+//   type: Date,
+//   required: true
+// },
+// creationDate: {
+//   type: Date,
+//   default: Date.now
+// },
+// style: {
+//   type: mongoose.Schema.Types.Mixed, // JSON object
+//   required: false
+// },
+// active: {
+//   type: Boolean,
+//   default: true
+// },
+// maxDistributions: {
+//   type: Number,
+//   default: 0,
+//   min: 0,
+//   required: false
+// },
+// currentDistributions:{
+//   type: Number,
+//   default: 0,
+//   min: 0,
+//   required: false
+// },
+// consumersId: {
+//   type: [mongoose.Schema.Types.ObjectId], // list of consumer ids
+//   ref: 'User', // assuming you have a 'Consumer' model or similar
+//   required: false
+// }
 
 // Create a new coupon
 const create = async (req, res) => {
   try {
-    const { title, category, discountPercentage, validTill, style, active } = req.body;
+    const { title, category, discountPercentage, validTill, style, active, maxDistributions } = req.body;
 
     // Use the user ID from the token (req.user)
     console.log(req.user);
@@ -16,10 +70,16 @@ const create = async (req, res) => {
       ownerId, // Assigning the authenticated user as the owner
       validTill,
       style,
-      active
+      active,
+      maxDistributions,
     });
 
     await newCoupon.save();
+
+
+    const currentUser = await User.findById(ownerId);
+    currentUser.createdCouponsId.push(newCoupon._id);
+    await currentUser.save();
 
     res.status(201).json({
       message: 'Coupon created successfully',
@@ -119,4 +179,49 @@ const updateCoupon = async (req, res) => {
   }
 }
 
-module.exports = { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon };
+const availCoupon = async (req, res) => {
+  try {
+    const { id } = req.params;
+    console.log(id);
+    // Find the coupon by the code
+    const coupon = await Coupon.findById(id);
+    const currentUser = await User.findById(req.user._id);
+
+    if (!coupon) {
+      return res.status(404).json({ message: 'Coupon not found' });
+    }
+    if (!coupon.active) {
+      return res.status(400).json({ message: 'Coupon is inactive' });
+    }
+    if (coupon.maxDistributions && coupon.currentDistributions >= coupon.maxDistributions) {
+      return res.status(400).json({ message: 'Coupon has reached its maximum distribution limit' });
+    }
+
+    // Check if the user has already availed the coupon
+    
+    if (currentUser.availedCouponsId.includes(coupon._id)) {
+      return res.status(400).json({ message: 'You have already availed this coupon' });
+    }
+
+    // Increment currentDistributions and add user to consumers list
+    coupon.currentDistributions++;
+    coupon.consumersId.push(req.user._id);
+
+    // Add coupon ID to the user's availedCouponsId
+    currentUser.availedCouponsId.push(coupon._id);
+
+    // Save both the coupon and user changes
+    await coupon.save();
+    await currentUser.save();
+
+    res.status(200).json({ message: 'Coupon availed successfully', coupon });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error availing coupon',
+      error: error.message
+    });
+  }
+};
+
+
+module.exports = { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon };

@@ -4,7 +4,7 @@ const path = require('path');
 // Set up storage for profile images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, path.join(__dirname, '../Uploads')); // Specify the upload folder
+        cb(null, path.join(__dirname, '../Uploads/ProfileImages')); // Specify the upload folder
     },
     filename: function (req, file, cb) {
         const fileName = `${Date.now()}-${file.originalname}`; // Rename the file

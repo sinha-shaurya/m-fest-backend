@@ -8,7 +8,17 @@ const userSchema = new mongoose.Schema({
   isProfileCompleted: { type: Boolean, default: false },
   type: { type: String, required: true },
   data: { type: mongoose.Schema.Types.Mixed, required: false },
-  profileImage: { type: String, required:false, unique: false}
+  profileImage: { type: String, required:false, unique: false},
+  createdCouponsId:{
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Coupon',
+    default: []
+  },
+  availedCouponsId:{
+    type: [mongoose.Schema.Types.ObjectId],
+    ref: 'Coupon',
+    default: []
+  }
 });
-
-module.exports = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+module.exports = User;
