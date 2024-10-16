@@ -8,6 +8,7 @@ const {
     updateProfile,
     getProfileData,
     uploadProfileImage,
+    getOwner,
     getProfileImageUrl
 } = require('../controllers/authController');
 const authMiddleware = require('../middlewares/authMiddleware');
@@ -22,6 +23,7 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.put('/update-profile', authMiddleware, updateProfile);
 router.get('/profile-data', authMiddleware, getProfileData);
+router.get('/getOwner/:ownerId',authMiddleware,getOwner);
 
 router.post('/upload-profile-image', authMiddleware, profileUploadMiddleware, uploadProfileImage);
 router.get('/profile-image-url', authMiddleware, profileUploadMiddleware, getProfileImageUrl);
