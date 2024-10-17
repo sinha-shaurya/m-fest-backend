@@ -1,4 +1,5 @@
-const axios = require('axios');
+// const axios = require('axios');
+import axios from 'axios';
 
 const getGoogleOAuthToken = async (code) => {
   const url = 'https://oauth2.googleapis.com/token';
@@ -28,4 +29,4 @@ const getGoogleUserInfo = async (id_token, access_token) => {
   return res.data;
 };
 
-module.exports = { getGoogleOAuthToken, getGoogleUserInfo };
+export { getGoogleOAuthToken, getGoogleUserInfo };

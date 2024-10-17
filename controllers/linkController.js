@@ -1,4 +1,5 @@
-const data = require("../data/link.json");
+// const data = require("../data/link.json");
+import data from '../data/link.json'
 
 const linkData = async (req, res)=>{
     try {
@@ -10,4 +11,4 @@ const linkData = async (req, res)=>{
     }
 }
 
-module.exports = {linkData}
+export {linkData}

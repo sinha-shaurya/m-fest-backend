@@ -1,11 +1,12 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel');
-const crypto = require('crypto');
-const { sendEmail } = require('../utils/sendEmail');
-const { generateToken } = require('../config/jwt');
-const fs = require('fs');
-const path = require('path');
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js';
+import crypto from 'crypto';
+import { sendEmail } from '../utils/sendEmail.js';
+import { generateToken } from '../config/jwt.js';
+import fs from 'fs';
+import path from 'path';
+
 
 const signup = async (req, res) => {
   try {
@@ -183,7 +184,7 @@ const getProfileImageUrl = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   signup,
   login,
   signout,

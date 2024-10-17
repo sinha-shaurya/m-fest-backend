@@ -1,13 +1,15 @@
-const express = require('express');
-const { create,
+import express from 'express';
+import {
+    create,
     getall,
     deleteCoupon,
     getbyid,
     toggleActive,
     updateCoupon,
     availCoupon
-} = require('../controllers/couponController');
-const authMiddleware = require('../middlewares/authMiddleware');
+} from '../controllers/couponController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+
 const router = express.Router();
 
 router.post('/create', authMiddleware, create);
@@ -21,4 +23,4 @@ router.put('/toggle-active/:id', authMiddleware, toggleActive);
 router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);
 
-module.exports = router;
+export default router;

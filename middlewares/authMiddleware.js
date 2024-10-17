@@ -1,24 +1,7 @@
-// const jwt = require('jsonwebtoken');
-// const { verifyToken } = require('../config/jwt');
+import jwt from 'jsonwebtoken';
+import User from '../models/userModel.js'; // Assuming your User schema is in the models folder
+import { verifyToken } from '../config/jwt.js';
 
-// const authMiddleware = (req, res, next) => {
-//   const token = req.header('Authorization');
-//   if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
-
-//   try {
-//     const decoded = verifyToken(token);
-//     req.user = decoded.userId;
-//     next();
-//   } catch (err) {
-//     res.status(401).json({ message: 'Token is not valid' });
-//   }
-// };
-
-// module.exports = authMiddleware;
-
-const jwt = require('jsonwebtoken');
-const User = require('../models/userModel'); // Assuming your User schema is in the models folder
-const { verifyToken } = require('../config/jwt');
 
 const authMiddleware = async (req, res, next) => {
   try {
@@ -50,5 +33,5 @@ const authMiddleware = async (req, res, next) => {
   }
 };
 
-module.exports = authMiddleware;
+export default authMiddleware;
 

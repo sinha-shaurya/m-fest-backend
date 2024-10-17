@@ -1,5 +1,7 @@
-const multer = require('multer');
-const path = require('path');
+// const multer = require('multer');
+// const path = require('path');
+import multer from 'multer';
+import path from 'path';
 
 // Set up storage for profile images
 const storage = multer.diskStorage({
@@ -43,4 +45,4 @@ const profileUploadMiddleware = (req, res, next) => {
     });
 };
 
-module.exports = profileUploadMiddleware;
+export default profileUploadMiddleware;

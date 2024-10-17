@@ -1,5 +1,5 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
     signup,
     login,
     signout,
@@ -10,9 +10,9 @@ const {
     uploadProfileImage,
     getOwner,
     getProfileImageUrl
-} = require('../controllers/authController');
-const authMiddleware = require('../middlewares/authMiddleware');
-const profileUploadMiddleware = require('../middlewares/profileUploadMiddleware');
+} from '../controllers/authController.js';
+import authMiddleware from '../middlewares/authMiddleware.js';
+import profileUploadMiddleware from '../middlewares/profileUploadMiddleware.js';
 const router = express.Router();
 
 router.post('/signup', signup);
@@ -28,4 +28,4 @@ router.get('/getOwner/:ownerId',authMiddleware,getOwner);
 router.post('/upload-profile-image', authMiddleware, profileUploadMiddleware, uploadProfileImage);
 router.get('/profile-image-url', authMiddleware, profileUploadMiddleware, getProfileImageUrl);
 
-module.exports = router;
+export default router;

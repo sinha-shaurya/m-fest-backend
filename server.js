@@ -1,13 +1,14 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
-const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const couponRoutes = require('./routes/couponRoutes');
-const linkRoutes = require('./routes/linkRoutes');
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import connectDB from './config/db.js';
+import authRoutes from './routes/authRoutes.js';
+import couponRoutes from './routes/couponRoutes.js';
+import linkRoutes from './routes/linkRoutes.js';
+import adminRouter from './config/adminPanel.js';
+// import AdminJS from 'adminjs';
+// import AdminJSExpress from '@adminjs/express';
+
 
 dotenv.config();
 connectDB();
@@ -32,6 +33,13 @@ app.use(cors(corsOptions));
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
+
+// AdminJS setup
+app.use('/admin', adminRouter);
+// const admin = new AdminJS({})
+
+// const adminRouter = AdminJSExpress.buildRouter(admin)
+// app.use(admin.options.rootPath, adminRouter);
 
 // API routes
 app.use('/api/auth', authRoutes);
