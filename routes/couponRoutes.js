@@ -6,7 +6,8 @@ import {
     getbyid,
     toggleActive,
     updateCoupon,
-    availCoupon
+    availCoupon,
+    updateCouponState
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -22,5 +23,6 @@ router.delete('/delete/:id', authMiddleware, deleteCoupon);
 router.put('/toggle-active/:id', authMiddleware, toggleActive);
 router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);
+router.put('/update-to-active/:id', authMiddleware, updateCouponState);
 
 export default router;

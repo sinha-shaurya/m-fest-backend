@@ -9,17 +9,34 @@ const userSchema = new mongoose.Schema({
   isProfileCompleted: { type: Boolean, default: false },
   type: { type: String, required: true },
   data: { type: mongoose.Schema.Types.Mixed, required: false },
-  profileImage: { type: String, required:false, unique: false},
-  createdCouponsId:{
+  profileImage: { type: String, required: false, unique: false },
+  createdCouponsId: {
     type: [mongoose.Schema.Types.ObjectId],
     ref: 'Coupon',
     default: []
   },
-  availedCouponsId:{
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Coupon',
-    default: []
-  }
+  availedCouponsId: [
+    {
+      consumerId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Coupon' // references the 'User' model
+      },
+      dateAdded: {
+        type: Date,
+        default: Date.now
+      },
+      status: {
+        type: String,
+        enum: ['ACTIVE', 'EXPIRED', 'REDEEMED'],
+        default: 'REDEEMED'
+      },
+      totalPrice: {
+        type: Number,
+        required: true,
+        default: 0
+      }
+    }
+  ] // list of objects containing CouponId and other fields
 });
 const User = mongoose.model('User', userSchema);
 export default User;

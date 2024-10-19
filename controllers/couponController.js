@@ -131,7 +131,7 @@ const updateCoupon = async (req, res) => {
 const availCoupon = async (req, res) => {
   try {
     const { id } = req.params;
-    console.log(id);
+    // console.log(id);
     // Find the coupon by the code
     const coupon = await Coupon.findById(id);
     const currentUser = await User.findById(req.user._id);
@@ -147,7 +147,7 @@ const availCoupon = async (req, res) => {
     }
 
     // Check if the user has already availed the coupon
-    
+
     if (currentUser.availedCouponsId.includes(coupon._id)) {
       return res.status(400).json({ message: 'You have already availed this coupon' });
     }
@@ -157,7 +157,7 @@ const availCoupon = async (req, res) => {
     coupon.consumersId.push(req.user._id);
 
     // Add coupon ID to the user's availedCouponsId
-    currentUser.availedCouponsId.push(coupon._id);
+    currentUser.availedCouponsId.push({ consumerId: coupon._id });
 
     // Save both the coupon and user changes
     await coupon.save();
@@ -172,5 +172,48 @@ const availCoupon = async (req, res) => {
   }
 };
 
+const updateCouponState = async (req, res) => {
+  const { id } = req.params; // Coupon ID from request parameters
+  const { partnerId, status } = req.body; // Partner ID and new status from request body
+  const userId = req.user._id; // User ID from authenticated user
 
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon };
+  // Mapping of numeric status values to string representation
+  const statusMapping = {
+    1: 'ACTIVE',
+    2: 'EXPIRED',
+    0: 'REDEEMED',
+  };
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    // Search for the coupon in availedCouponsId by comparing the _id field
+    const availedCoupon = user.availedCouponsId.find(coupon => coupon._id.toString() === id);
+
+    if (!availedCoupon) {
+      return res.status(404).json({ message: "Coupon not found in availed coupons" });
+    }
+
+    // Check if the provided status is valid and update the coupon's status
+    if (status in statusMapping) {
+      availedCoupon.status = statusMapping[status];
+    } else {
+      return res.status(400).json({ message: "Invalid status provided" });
+    }
+
+    // Save the user document with the updated coupon status
+    await user.save();
+
+    // Send success response with the updated coupon
+    res.json({ message: "Coupon state updated successfully", coupon: availedCoupon });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+
+
+
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState };
