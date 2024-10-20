@@ -213,7 +213,19 @@ const updateCouponState = async (req, res) => {
   }
 };
 
+const getAvailedCoupon = async (req, res) => {
+  try {
+    if(req.user.availedCouponsId!=undefined){
+      res.json(req.user.availedCouponsId);
+    } else {
+      res.status(404).json({ message: 'No availed coupons found' });
+    }
+    
+  } catch (error) {
+    console.error("Error fetching availed coupons:", error);
+    res.status(500).json({ message: 'Failed to fetch availed coupons' });
+  }
+};
 
 
-
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState };
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon };

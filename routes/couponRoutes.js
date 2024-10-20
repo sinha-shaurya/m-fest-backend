@@ -7,7 +7,8 @@ import {
     toggleActive,
     updateCoupon,
     availCoupon,
-    updateCouponState
+    updateCouponState,
+    getAvailedCoupon
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -16,6 +17,7 @@ const router = express.Router();
 router.post('/create', authMiddleware, create);
 router.get('/getall', authMiddleware, getall);
 router.get('/get/:id', authMiddleware, getbyid);
+router.get('/availed', authMiddleware, getAvailedCoupon);
 router.delete('/delete/:id', authMiddleware, deleteCoupon);
 
 
@@ -23,6 +25,6 @@ router.delete('/delete/:id', authMiddleware, deleteCoupon);
 router.put('/toggle-active/:id', authMiddleware, toggleActive);
 router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);
-router.put('/update-to-active/:id', authMiddleware, updateCouponState);
+router.put('/update-state/:id', authMiddleware, updateCouponState);
 
 export default router;
