@@ -19,16 +19,6 @@ app.use(express.json());
 // Configure CORS (Allow all origins by default)
 app.use(cors());
 
-// Optionally configure CORS with more restrictive settings
-/*
-const corsOptions = {
-    origin: 'http://your-frontend-domain.com', // Restrict to your frontend's domain
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-    allowedHeaders: ['Content-Type', 'Authorization'], // Allowed headers
-};
-app.use(cors(corsOptions));
-*/
-
 // Test route
 app.get('/', (req, res) => {
   res.send('API is running...');
@@ -36,10 +26,6 @@ app.get('/', (req, res) => {
 
 // AdminJS setup
 app.use('/admin', adminRouter);
-// const admin = new AdminJS({})
-
-// const adminRouter = AdminJSExpress.buildRouter(admin)
-// app.use(admin.options.rootPath, adminRouter);
 
 // API routes
 app.use('/api/auth', authRoutes);

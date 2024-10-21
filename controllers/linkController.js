@@ -1,14 +1,13 @@
-// const data = require("../data/link.json");
-import data from '../data/link.json'
+import Link from '../models/linkModel.js'; // Import the Link model
 
-const linkData = async (req, res)=>{
+const linkData = async (req, res) => {
     try {
-
-        const links = await data;
-        res.status(200).json(links);
+        // Fetch data from the MongoDB collection using Mongoose
+        const links = await Link.find(); // Fetches all links from the collection
+        res.status(200).json(links); // Return the data as a JSON response
     } catch (error) {
         res.status(500).json({ message: 'Failed to fetch links', error: error.message });
     }
-}
+};
 
-export {linkData}
+export { linkData };

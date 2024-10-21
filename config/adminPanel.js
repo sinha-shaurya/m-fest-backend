@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 // Import your models
 import User from '../models/userModel.js';
 import Coupon from '../models/coupunModel.js'; // Ensure the model name is correct
+import Link from '../models/linkModel.js'; // Ensure the model name is correct
 
 // Register the AdminJS Mongoose adapter
 AdminJS.registerAdapter({
@@ -31,6 +32,13 @@ const adminOptions = {
         filterProperties: ['title', 'discountPercentage', 'validTill'], // Enable filtering
       },
     },
+    {
+      resource: Link,
+      options: {
+        listProperties: ['_id', 'title', 'link', 'img'],
+        filterProperties: ['title', 'link'], // Enable filtering
+      },
+    }
   ],
   branding: {
     companyName: 'Your Company',
