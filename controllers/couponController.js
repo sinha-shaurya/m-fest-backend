@@ -295,7 +295,10 @@ const storeUsedCoupon = async (req, res) => {
 
         if (usedCoupon.length > 0) {
           response.push({
-            consumerId: consumer._id,
+            consumerData: {
+              id : consumer._id,
+              ...consumer.data
+            },
             couponDetail: usedCoupon
           });
         }
