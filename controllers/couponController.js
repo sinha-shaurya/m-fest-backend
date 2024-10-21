@@ -215,17 +215,87 @@ const updateCouponState = async (req, res) => {
 
 const getAvailedCoupon = async (req, res) => {
   try {
-    if(req.user.availedCouponsId!=undefined){
+    if (req.user.availedCouponsId != undefined) {
       res.json(req.user.availedCouponsId);
     } else {
       res.status(404).json({ message: 'No availed coupons found' });
     }
-    
+
   } catch (error) {
     console.error("Error fetching availed coupons:", error);
     res.status(500).json({ message: 'Failed to fetch availed coupons' });
   }
 };
 
+const updateAmount = async (req, res) => {
+  try {
+    const { id } = req.params; // id of the coupon to update
+    const { consumerId, amount } = req.body; // consumerId and the new amount (totalprize)
 
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon };
+    // Find the user by consumerId
+    const user = await User.findById(consumerId);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Find the correct availed coupon by matching the id with _id
+    const availedCoupon = user.availedCouponsId.find(coupon => coupon._id.toString() === id);
+    
+    if (!availedCoupon) {
+      return res.status(404).json({ message: 'Coupon not found in user\'s availed coupons' });
+    }
+
+    // Update the totalprize field of the matched coupon
+    availedCoupon.totalPrice = amount;
+
+    // Save the updated user document
+    await user.save();
+
+    res.status(200).json({ message: 'Coupon amount updated successfully' });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error updating coupon amount',
+      error: error.message
+    });
+  }
+}
+
+
+const storeUsedCoupon = async (req, res) => {
+  try {
+    let response = [];
+
+    for (let couponId of req.user.createdCouponsId) {
+      // console.log(couponId);
+      const coupon = await Coupon.findById(couponId);
+
+      for (let consumerId of coupon.consumersId) {
+        const consumer = await User.findById(consumerId);
+
+        // Filter consumer's availed coupons based on couponId
+        const usedCoupon = consumer.availedCouponsId.filter((singleconsumer) => {
+          // console.log(singleconsumer.consumerId, couponId);
+          return singleconsumer.consumerId.equals(couponId);
+        });
+
+        if (usedCoupon.length > 0) {
+          response.push({
+            consumerId: consumer._id,
+            couponDetail: usedCoupon
+          });
+        }
+      }
+    }
+
+    res.status(200).json(response);
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error storing used coupon',
+      error: error.message
+    });
+  }
+}
+
+
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon };

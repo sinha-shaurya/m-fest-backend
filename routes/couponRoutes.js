@@ -8,7 +8,9 @@ import {
     updateCoupon,
     availCoupon,
     updateCouponState,
-    getAvailedCoupon
+    getAvailedCoupon,
+    updateAmount,
+    storeUsedCoupon
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -18,6 +20,7 @@ router.post('/create', authMiddleware, create);
 router.get('/getall', authMiddleware, getall);
 router.get('/get/:id', authMiddleware, getbyid);
 router.get('/availed', authMiddleware, getAvailedCoupon);
+router.get('/store-used-coupon', authMiddleware, storeUsedCoupon);
 router.delete('/delete/:id', authMiddleware, deleteCoupon);
 
 
@@ -26,5 +29,6 @@ router.put('/toggle-active/:id', authMiddleware, toggleActive);
 router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);
 router.put('/update-state/:id', authMiddleware, updateCouponState);
+router.put('/update-amount/:id', authMiddleware, updateAmount);
 
 export default router;
