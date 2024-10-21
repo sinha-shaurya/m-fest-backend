@@ -223,7 +223,7 @@ const getAvailedCoupon = async (req, res) => {
         const coupon = await Coupon.findById(availedCoupon.consumerId);
         // console.log(availedCoupon, coupon);
         data.push({
-          ...availedCoupon._doc, ...coupon._doc
+          ...coupon._doc, ...availedCoupon._doc
         });
         // console.log({
         //    ...availedCoupon._doc, ...coupon._doc
