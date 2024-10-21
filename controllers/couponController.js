@@ -215,8 +215,22 @@ const updateCouponState = async (req, res) => {
 
 const getAvailedCoupon = async (req, res) => {
   try {
+    let data = [];
     if (req.user.availedCouponsId != undefined) {
-      res.json(req.user.availedCouponsId);
+      for(let availedCoupon of req.user.availedCouponsId){
+        // console.log(availedCoupons.consumerId);
+        // console.log(availCoupon)
+        const coupon = await Coupon.findById(availedCoupon.consumerId);
+        // console.log(availedCoupon, coupon);
+        data.push({
+          ...availedCoupon._doc, ...coupon._doc
+        });
+        // console.log({
+        //    ...availedCoupon._doc, ...coupon._doc
+        // });
+      }
+      
+      res.json(data);
     } else {
       res.status(404).json({ message: 'No availed coupons found' });
     }
