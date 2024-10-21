@@ -36,7 +36,12 @@ const userSchema = new mongoose.Schema({
         default: 0
       }
     }
-  ] // list of objects containing CouponId and other fields
+  ], // list of objects containing CouponId and other fields
+  couponCount: {
+    type: Number,
+    required: true,
+    default: 2
+  }
 });
 const User = mongoose.model('User', userSchema);
 export default User;

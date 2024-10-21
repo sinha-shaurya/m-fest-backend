@@ -10,7 +10,8 @@ import {
     updateCouponState,
     getAvailedCoupon,
     updateAmount,
-    storeUsedCoupon
+    storeUsedCoupon,
+    transferCoupon
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -30,5 +31,6 @@ router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);
 router.put('/update-state/:id', authMiddleware, updateCouponState);
 router.put('/update-amount/:id', authMiddleware, updateAmount);
+router.put('/transfer-coupon', authMiddleware, transferCoupon);
 
 export default router;
