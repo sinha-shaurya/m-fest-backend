@@ -113,7 +113,7 @@ const getProfileData = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ data: user.data, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type });
+    res.json({ data: user.data, _id:userId, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type });
   } catch (error) {
     console.error('Error getting profile data:', error);
     res.status(500).json({ message: 'Server error' });
