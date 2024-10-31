@@ -88,6 +88,7 @@ const updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
+        phone: req.body.phonenumber,
         data: req.body,  // Updating the Mixed type field
         isProfileCompleted: isDataNotEmpty ? true : false,
       },

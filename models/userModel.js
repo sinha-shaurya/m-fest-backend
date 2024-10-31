@@ -41,6 +41,12 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
     default: 2
+  }, 
+  phone: {
+    type: String,
+    required: false,
+    unique: true,
+    // default: null
   }
 });
 const User = mongoose.model('User', userSchema);
