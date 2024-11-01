@@ -5,9 +5,8 @@ import connectDB from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import linkRoutes from './routes/linkRoutes.js';
+import generalRoutes from './routes/generalRoutes.js';
 import adminRouter from './config/adminPanel.js';
-// import AdminJS from 'adminjs';
-// import AdminJSExpress from '@adminjs/express';
 
 
 dotenv.config();
@@ -31,8 +30,9 @@ app.use('/admin', adminRouter);
 app.use('/api/auth', authRoutes);
 app.use('/api/coupon', couponRoutes);
 app.use('/api/link', linkRoutes);
+app.use('/api/info', generalRoutes);
 
 // Start server
 
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`Server running on  ${PORT}`));
