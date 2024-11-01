@@ -31,7 +31,7 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    res.json({ token: generateToken(user._id), name: user.name, type: user.type, isProfileCompleted: user.isProfileCompleted, message: 'Login successful' });
+    res.json({ token: generateToken(user._id), name: user.name, type: user.type, isApproved: user.isVerified, isProfileCompleted: user.isProfileCompleted, message: 'Login successful' });
   } catch (error) {
     res.status(500).json({ message: 'Login failed', error: error.message });
   }
@@ -94,7 +94,6 @@ const updateProfile = async (req, res) => {
       },
       { new: true }  // Return the updated document
     );
-
     if (!updatedUser) {
       return res.status(404).json({ message: 'User not found' });
     }
@@ -114,7 +113,7 @@ const getProfileData = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
-    res.json({ data: user.data, _id:userId, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type });
+    res.json({ data: user.data, _id: userId, isApproved: user.isVerified, isProfileCompleted: user.isProfileCompleted, name: user.name, email: user.email, type: user.type });
   } catch (error) {
     console.error('Error getting profile data:', error);
     res.status(500).json({ message: 'Server error' });
@@ -123,11 +122,11 @@ const getProfileData = async (req, res) => {
 
 const getOwner = async (req, res) => {
   try {
-    const {ownerId} = req.params;
+    const { ownerId } = req.params;
     const user = await User.findById(ownerId);
     if (!user || user.type !== 'partner') {
       return res.status(404).json({ message: 'Owner not found' });
-    } 
+    }
     res.json({ data: user.data, name: user.name, email: user.email });
   } catch (error) {
     console.error('Error getting Owner data:', error);
@@ -137,51 +136,51 @@ const getOwner = async (req, res) => {
 
 const uploadProfileImage = async (req, res) => {
   if (!req.file) {
-      return res.status(400).json({ message: 'No image uploaded or invalid file type.' });
+    return res.status(400).json({ message: 'No image uploaded or invalid file type.' });
   }
 
   const newImageUrl = `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`;
 
   try {
-      const user = await User.findById(req.user._id);
-      if (user && user.profileImage) {
-          const previousImagePath = path.join(__dirname, '..', user.profileImage.split('/uploads/')[1]);
+    const user = await User.findById(req.user._id);
+    if (user && user.profileImage) {
+      const previousImagePath = path.join(__dirname, '..', user.profileImage.split('/uploads/')[1]);
 
-          // Delete the previous image file from the server
-          fs.unlink(previousImagePath, (err) => {
-              if (err) {
-                  console.error('Error deleting previous image:', err);
-              } else {
-                  console.log('Previous image deleted successfully');
-              }
-          });
-      }
-      const updatedUser = await User.findByIdAndUpdate(
-          req.user._id,
-          { profileImage: newImageUrl },
-          { new: true }
-      );
+      // Delete the previous image file from the server
+      fs.unlink(previousImagePath, (err) => {
+        if (err) {
+          console.error('Error deleting previous image:', err);
+        } else {
+          console.log('Previous image deleted successfully');
+        }
+      });
+    }
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { profileImage: newImageUrl },
+      { new: true }
+    );
 
-      console.log({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
-      return res.json({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
+    console.log({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
+    return res.json({ message: 'Profile image uploaded successfully', imageUrl: newImageUrl, user: updatedUser });
   } catch (error) {
-      console.error('Error uploading profile image:', error);
-      return res.status(500).json({ message: 'Error uploading profile image' });
+    console.error('Error uploading profile image:', error);
+    return res.status(500).json({ message: 'Error uploading profile image' });
   }
 };
 
 
 const getProfileImageUrl = async (req, res) => {
   try {
-      console.log(req.user)
-      const user = await User.findById(req.user._id).select('profileImage');
-      if (!user) {
-          return res.status(404).json({ message: 'User not found' });
-      }
-      return res.json({ profileImage: user.profileImage });
+    console.log(req.user)
+    const user = await User.findById(req.user._id).select('profileImage');
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    return res.json({ profileImage: user.profileImage });
   } catch (error) {
-      console.error('Error fetching profile image URL:', error);
-      return res.status(500).json({ message: 'Error fetching profile image URL' });
+    console.error('Error fetching profile image URL:', error);
+    return res.status(500).json({ message: 'Error fetching profile image URL' });
   }
 };
 
