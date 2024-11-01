@@ -346,12 +346,12 @@ const transferCouponByPhone = async (req, res) => {
   try {
     const senderId = req.user._id;
     const { phoneNumber, transferCount } = req.body;
-
     // Fetch the sender and receiver by their IDs
     const sender = await User.findById(senderId);
-    const reciver = await User.findOne({phone: phoneNumber}); 
-    console.log(sender);
-    console.log(reciver);
+    // const reciver = await User.findOne({phone: phoneNumber}); 
+    const reciver = await User.findOne({ "data.phonenumber": phoneNumber });
+    console.log("sender: ",sender);
+    console.log("receiver: ",reciver);
     
     // Ensure sender has enough coupons and prevent couponCount from going below 1
     if (!reciver) {
