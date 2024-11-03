@@ -45,8 +45,14 @@ const create = async (req, res) => {
 // Get all coupons
 const getall = async (req, res) => {
   try {
-    const coupons = await Coupon.find();
+    // console.log(req.user);
+    if(req.user.type === 'partner'){
+      const couponIdList = req.user.createdCouponsId;
+      const coupons = await Coupon.find({ _id: { $in: couponIdList } });
+      return res.status(200).json(coupons);
+    }
 
+    const coupons = await Coupon.find();
     res.status(200).json(coupons);
   } catch (error) {
     res.status(500).json({
