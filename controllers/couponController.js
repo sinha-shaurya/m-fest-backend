@@ -3,7 +3,44 @@
 // import Coupon from '../models/coupunModel';
 import Coupon from '../models/coupunModel.js';
 import User from '../models/userModel.js';
-
+const statesAndUTs = [
+  'Andhra Pradesh',
+  'Arunachal Pradesh',
+  'Assam',
+  'Bihar',
+  'Chhattisgarh',
+  'Goa',
+  'Gujarat',
+  'Haryana',
+  'Himachal Pradesh',
+  'Jharkhand',
+  'Karnataka',
+  'Kerala',
+  'Madhya Pradesh',
+  'Maharashtra',
+  'Manipur',
+  'Meghalaya',
+  'Mizoram',
+  'Nagaland',
+  'Odisha',
+  'Punjab',
+  'Rajasthan',
+  'Sikkim',
+  'Tamil Nadu',
+  'Telangana',
+  'Tripura',
+  'Uttar Pradesh',
+  'Uttarakhand',
+  'West Bengal',
+  'Andaman and Nicobar Islands',
+  'Chandigarh',
+  'Dadra and Nagar Haveli and Daman and Diu',
+  'Lakshadweep',
+  'Delhi',
+  'Puducherry',
+  'Ladakh',
+  'Jammu and Kashmir'
+];
 const create = async (req, res) => {
   try {
     const { title, category, discountPercentage, validTill, style, active, maxDistributions } = req.body;
@@ -45,14 +82,25 @@ const create = async (req, res) => {
 // Get all coupons
 const getall = async (req, res) => {
   try {
-    // console.log(req.user);
-    if(req.user.type === 'partner'){
+    const state = req.query.state;  // Get the state from the query parameter
+
+    if (req.user.type === 'partner') {
       const couponIdList = req.user.createdCouponsId;
       const coupons = await Coupon.find({ _id: { $in: couponIdList } });
       return res.status(200).json(coupons);
     }
 
-    const coupons = await Coupon.find();
+
+    let coupons;
+    if (state === 'all') {
+      coupons = await Coupon.find();
+    } else {
+      const usersInState = await User.find({ 'data.shop_state': state });
+      const userIdsInState = usersInState.map(user => user._id);
+      
+      coupons = await Coupon.find({ ownerId: { $in: userIdsInState } });
+    }
+
     res.status(200).json(coupons);
   } catch (error) {
     res.status(500).json({
@@ -61,6 +109,7 @@ const getall = async (req, res) => {
     });
   }
 };
+
 const getbyid = async (req, res) => {
   try {
     const { id } = req.params;
