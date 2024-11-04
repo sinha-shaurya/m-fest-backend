@@ -83,7 +83,7 @@ const create = async (req, res) => {
 
 const getall = async (req, res) => {
   try {
-    const state = req.query.state;  // Get the state from the query parameter
+    const city = req.query.city;  // Get the city from the query parameter
     const search = req.query.search; // Get the search text from the query parameter
 
     let filter = {};
@@ -93,11 +93,11 @@ const getall = async (req, res) => {
       const couponIdList = req.user.createdCouponsId;
       filter._id = { $in: couponIdList };
     } else {
-      // Filter by exact state if provided
-      if (state && state !== 'all') {
-        const usersInState = await User.find({ 'data.shop_state': state });
-        const userIdsInState = usersInState.map(user => user._id);
-        filter.ownerId = { $in: userIdsInState };
+      // Filter by exact city if provided
+      if (city && city !== 'all') {
+        const usersInCity = await User.find({ 'data.shop_city': city });
+        const userIdsInCity = usersInCity.map(user => user._id);
+        filter.ownerId = { $in: userIdsInCity };
       }
     }
 
@@ -117,6 +117,7 @@ const getall = async (req, res) => {
     });
   }
 };
+
 
 const getbyid = async (req, res) => {
   try {
@@ -444,4 +445,37 @@ const transferCouponByPhone = async (req, res) => {
   }
 }
 
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone };
+const getAllCities = async (req, res) => {
+  try {
+    const { state } = req.body;
+
+    // Create the base query with partner type and non-empty createdCouponsId
+    const query = {
+      type: "partner",
+      createdCouponsId: { $exists: true, $ne: [] }
+    };
+
+    // If a state is specified, add it to the query
+    if (state) {
+      query["data.shop_state"] = state;
+    }
+
+    // Fetch users based on the query
+    const users = await User.find(query);
+
+    // Extract unique cities
+    const cities = new Set();
+    users.forEach(user => {
+      if (user.data && user.data.shop_city) {
+        cities.add(user.data.shop_city);
+      }
+    });
+
+    // Send back the unique cities as an array
+    res.status(200).json({ cities: Array.from(cities) });
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching cities', error });
+  }
+};
+
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone, getAllCities };

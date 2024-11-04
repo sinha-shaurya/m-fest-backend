@@ -12,7 +12,8 @@ import {
     updateAmount,
     storeUsedCoupon,
     transferCoupon,
-    transferCouponByPhone
+    transferCouponByPhone,
+    getAllCities
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -23,6 +24,7 @@ router.get('/getall', authMiddleware, getall);
 router.get('/get/:id', authMiddleware, getbyid);
 router.get('/availed', authMiddleware, getAvailedCoupon);
 router.get('/store-used-coupon', authMiddleware, storeUsedCoupon);
+router.get('/get-cities', authMiddleware, getAllCities);
 router.delete('/delete/:id', authMiddleware, deleteCoupon);
 
 
