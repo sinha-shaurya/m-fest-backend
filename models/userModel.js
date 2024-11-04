@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   availedCouponsId: [
     {
-      consumerId: {
+      couponId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Coupon' // references the 'User' model
       },

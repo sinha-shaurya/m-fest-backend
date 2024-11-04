@@ -3,6 +3,7 @@
 // import Coupon from '../models/coupunModel';
 import Coupon from '../models/coupunModel.js';
 import User from '../models/userModel.js';
+
 const statesAndUTs = [
   'Andhra Pradesh',
   'Arunachal Pradesh',
@@ -41,6 +42,7 @@ const statesAndUTs = [
   'Ladakh',
   'Jammu and Kashmir'
 ];
+
 const create = async (req, res) => {
   try {
     const { title, category, discountPercentage, validTill, style, active, maxDistributions } = req.body;
@@ -79,27 +81,33 @@ const create = async (req, res) => {
   }
 };
 
-// Get all coupons
 const getall = async (req, res) => {
   try {
     const state = req.query.state;  // Get the state from the query parameter
+    const search = req.query.search; // Get the search text from the query parameter
 
+    let filter = {};
+
+    // Filter for partner type
     if (req.user.type === 'partner') {
       const couponIdList = req.user.createdCouponsId;
-      const coupons = await Coupon.find({ _id: { $in: couponIdList } });
-      return res.status(200).json(coupons);
-    }
-
-
-    let coupons;
-    if (state === 'all') {
-      coupons = await Coupon.find();
+      filter._id = { $in: couponIdList };
     } else {
-      const usersInState = await User.find({ 'data.shop_state': state });
-      const userIdsInState = usersInState.map(user => user._id);
-      
-      coupons = await Coupon.find({ ownerId: { $in: userIdsInState } });
+      // Filter by exact state if provided
+      if (state && state !== 'all') {
+        const usersInState = await User.find({ 'data.shop_state': state });
+        const userIdsInState = usersInState.map(user => user._id);
+        filter.ownerId = { $in: userIdsInState };
+      }
     }
+
+    // Add a partial match filter for title if search text is provided
+    if (search) {
+      filter.title = { $regex: search, $options: 'i' }; // Case-insensitive partial match
+    }
+
+    // Fetch coupons based on filters
+    const coupons = await Coupon.find(filter);
 
     res.status(200).json(coupons);
   } catch (error) {
@@ -252,7 +260,12 @@ const updateCouponState = async (req, res) => {
 
     // Check if the provided status is valid and update the coupon's status
     if (status in statusMapping) {
-      availedCoupon.status = statusMapping[status];
+      const coupon = await Coupon.findById(availedCoupon.couponId);
+      if (coupon.ownerId === partnerId) {
+        availedCoupon.status = statusMapping[status];
+      } else {
+        return res.status(403).json({ message: "Coupon owner does not match the provided partner ID" });
+      }
     } else {
       return res.status(400).json({ message: "Invalid status provided" });
     }
@@ -272,7 +285,7 @@ const getAvailedCoupon = async (req, res) => {
   try {
     let data = [];
     if (req.user.availedCouponsId != undefined) {
-      for(let availedCoupon of req.user.availedCouponsId){
+      for (let availedCoupon of req.user.availedCouponsId) {
         // console.log(availedCoupons.consumerId);
         // console.log(availCoupon)
         const coupon = await Coupon.findById(availedCoupon.consumerId);
@@ -284,7 +297,7 @@ const getAvailedCoupon = async (req, res) => {
         //    ...availedCoupon._doc, ...coupon._doc
         // });
       }
-      
+
       res.json(data);
     } else {
       res.status(404).json({ message: 'No availed coupons found' });
@@ -303,14 +316,14 @@ const updateAmount = async (req, res) => {
 
     // Find the user by consumerId
     const user = await User.findById(consumerId);
-    
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     // Find the correct availed coupon by matching the id with _id
     const availedCoupon = user.availedCouponsId.find(coupon => coupon._id.toString() === id);
-    
+
     if (!availedCoupon) {
       return res.status(404).json({ message: 'Coupon not found in user\'s availed coupons' });
     }
@@ -329,7 +342,6 @@ const updateAmount = async (req, res) => {
     });
   }
 }
-
 
 const storeUsedCoupon = async (req, res) => {
   try {
@@ -351,7 +363,7 @@ const storeUsedCoupon = async (req, res) => {
         if (usedCoupon.length > 0) {
           response.push({
             consumerData: {
-              id : consumer._id,
+              id: consumer._id,
               ...consumer.data
             },
             couponDetail: usedCoupon
@@ -405,31 +417,31 @@ const transferCouponByPhone = async (req, res) => {
     const sender = await User.findById(senderId);
     // const reciver = await User.findOne({phone: phoneNumber}); 
     const reciver = await User.findOne({ "data.phonenumber": phoneNumber });
-    console.log("sender: ",sender);
-    console.log("receiver: ",reciver);
-    
+    console.log("sender: ", sender);
+    console.log("receiver: ", reciver);
+
     // Ensure sender has enough coupons and prevent couponCount from going below 1
     if (!reciver) {
       return res.status(404).json({ message: 'User not found with the given phone number' });
     }
-    
+
     if (sender.couponCount < transferCount + 1) {
       return res.status(400).json({ message: 'Insufficient coupons to transfer' });
     }
-    
+
     // Update coupon counts
     sender.couponCount -= transferCount;
     reciver.couponCount += transferCount;
-    
+
     // Save the updated users
     await sender.save();
     await reciver.save();
-    
+
     res.status(200).json({ message: 'Coupon(s) transferred successfully' });
-    
+
   } catch (error) {
-    res.status(500).json({ message: 'Error transferring coupons', error });  
+    res.status(500).json({ message: 'Error transferring coupons', error });
   }
 }
 
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone};
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone };
