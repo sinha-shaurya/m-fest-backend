@@ -355,14 +355,16 @@ const storeUsedCoupon = async (req, res) => {
     for (let couponId of req.user.createdCouponsId) {
       // console.log(couponId);
       const coupon = await Coupon.findById(couponId);
+      // console.log(coupon);
 
       for (let consumerId of coupon.consumersId) {
         const consumer = await User.findById(consumerId);
+        console.log(consumer);
 
         // Filter consumer's availed coupons based on couponId
         const usedCoupon = consumer.availedCouponsId.filter((singleconsumer) => {
           // console.log(singleconsumer.consumerId, couponId);
-          return singleconsumer.consumerId.equals(couponId);
+          return singleconsumer.couponId.equals(couponId);
         });
 
         if (usedCoupon.length > 0) {
