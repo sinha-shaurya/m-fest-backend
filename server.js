@@ -6,6 +6,7 @@ import authRoutes from './routes/authRoutes.js';
 import couponRoutes from './routes/couponRoutes.js';
 import linkRoutes from './routes/linkRoutes.js';
 import generalRoutes from './routes/generalRoutes.js';
+import landingRoutes from './routes/landingRoutes.js';
 import adminRouter from './config/adminPanel.js';
 
 
@@ -31,6 +32,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/coupon', couponRoutes);
 app.use('/api/link', linkRoutes);
 app.use('/api/info', generalRoutes);
+app.use('/api/landing', landingRoutes);
 
 // Start server
 
