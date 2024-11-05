@@ -253,7 +253,8 @@ const updateCouponState = async (req, res) => {
     const user = await User.findById(userId);
 
     // Search for the coupon in availedCouponsId by comparing the _id field
-    const availedCoupon = user.availedCouponsId.find(coupon => coupon._id.toString() === id);
+    const availedCoupon = user.availedCouponsId.find(coupon => coupon.couponId.toString() === id);
+    // console.log(id);
 
     if (!availedCoupon) {
       return res.status(404).json({ message: "Coupon not found in availed coupons" });
@@ -262,7 +263,9 @@ const updateCouponState = async (req, res) => {
     // Check if the provided status is valid and update the coupon's status
     if (status in statusMapping) {
       const coupon = await Coupon.findById(availedCoupon.couponId);
-      if (coupon.ownerId === partnerId) {
+      // console.log(coupon.ownerId.toString());
+      // console.log(partnerId);
+      if (coupon.ownerId.toString() === partnerId) {
         availedCoupon.status = statusMapping[status];
       } else {
         return res.status(403).json({ message: "Coupon owner does not match the provided partner ID" });

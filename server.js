@@ -7,7 +7,7 @@ import couponRoutes from './routes/couponRoutes.js';
 import linkRoutes from './routes/linkRoutes.js';
 import generalRoutes from './routes/generalRoutes.js';
 import landingRoutes from './routes/landingRoutes.js';
-// import adminRouter from './config/adminPanel.js';
+import adminRouter from './config/adminPanel.js';
 
 
 dotenv.config();
@@ -25,7 +25,7 @@ app.get('/', (req, res) => {
 });
 
 // AdminJS setup
-// app.use('/admin', adminRouter);
+app.use('/admin', adminRouter);
 
 // API routes
 app.use('/api/auth', authRoutes);
