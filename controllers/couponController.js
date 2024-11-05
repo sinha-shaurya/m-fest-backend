@@ -221,7 +221,7 @@ const availCoupon = async (req, res) => {
     coupon.consumersId.push(req.user._id);
 
     // Add coupon ID to the user's availedCouponsId
-    currentUser.availedCouponsId.push({ consumerId: coupon._id });
+    currentUser.availedCouponsId.push({ couponId: coupon._id });
 
     // Save both the coupon and user changes
     await coupon.save();
@@ -291,6 +291,7 @@ const getAvailedCoupon = async (req, res) => {
         // console.log(availCoupon)
         const coupon = await Coupon.findById(availedCoupon.consumerId);
         // console.log(availedCoupon, coupon);
+        console.log(coupon);
         data.push({
           ...coupon._doc, ...availedCoupon._doc
         });
