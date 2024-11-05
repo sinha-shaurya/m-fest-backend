@@ -48,9 +48,9 @@ const create = async (req, res) => {
     const { title, category, discountPercentage, validTill, style, active, maxDistributions } = req.body;
 
     // Use the user ID from the token (req.user)
-    console.log(req.user);
+    // console.log(req.user);
     const ownerId = req.user._id;
-    console.log(ownerId);
+    // console.log(ownerId);
     const newCoupon = new Coupon({
       title,
       category,
@@ -62,11 +62,11 @@ const create = async (req, res) => {
       maxDistributions,
     });
 
-    await newCoupon.save();
+    const saved_newCoupon = await newCoupon.save();
 
-
+    // console.log(saved_newCoupon);
     const currentUser = await User.findById(ownerId);
-    currentUser.createdCouponsId.push(newCoupon._id);
+    currentUser.createdCouponsId.push(saved_newCoupon._id);
     await currentUser.save();
 
     res.status(201).json({
