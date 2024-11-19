@@ -12,6 +12,10 @@ const linkSchema = new mongoose.Schema({
   img: {
     type: String,
     required: true
+  },
+  display:{
+    type: Boolean,
+    default: false
   }
 }, {
   timestamps: true // Adds createdAt and updatedAt fields

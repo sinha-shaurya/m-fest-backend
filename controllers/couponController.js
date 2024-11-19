@@ -1,6 +1,7 @@
 // const Coupon = require('../models/coupunModel');
 // const User = require('../models/userModel');
 // import Coupon from '../models/coupunModel';
+// import { use } from 'passport';
 import Coupon from '../models/coupunModel.js';
 import User from '../models/userModel.js';
 
@@ -251,9 +252,10 @@ const updateCouponState = async (req, res) => {
   try {
     // Find the user by ID
     const user = await User.findById(userId);
+    console.log(user)
 
     // Search for the coupon in availedCouponsId by comparing the _id field
-    const availedCoupon = user.availedCouponsId.find(coupon => coupon.couponId.toString() === id);
+    const availedCoupon = user.availedCouponsId.find(coupon => coupon._id.toString() === id);
     // console.log(id);
 
     if (!availedCoupon) {
