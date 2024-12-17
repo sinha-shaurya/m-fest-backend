@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     {
       couponId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Coupon' // references the 'User' model
+        ref: 'Coupon'
       },
       dateAdded: {
         type: Date,
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
         default: 0
       }
     }
-  ], // list of objects containing CouponId and other fields
+  ],
   couponCount: {
     type: Number,
     required: true,
@@ -46,8 +46,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: false,
     unique: true,
-    // default: null
   }
+}, {
+  timestamps: true
 });
+
 const User = mongoose.model('User', userSchema);
 export default User;

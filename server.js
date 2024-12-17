@@ -10,6 +10,7 @@ import generalRoutes from './routes/generalRoutes.js';
 import landingRoutes from './routes/landingRoutes.js';
 import adminRouter from './config/adminPanel.js';
 import downloadRoutes from './routes/downloadRoutes.js';
+import fs from 'fs';
 
 
 dotenv.config();
@@ -25,7 +26,8 @@ app.use(cors());
 
 // Test route
 app.get('/', (req, res) => {
-  res.send('API is running...');
+  const filePath = path.resolve('public/index.html');
+  res.sendFile(filePath);
 });
 app.get('/home', (req, res) => {
   const filePath = path.resolve('public/index.html'); // Adjust path if necessary
@@ -46,6 +48,19 @@ app.use('/api/link', linkRoutes);
 app.use('/api/info', generalRoutes);
 app.use('/api/landing', landingRoutes);
 app.use('/download', downloadRoutes);
+
+// Add this after your existing middleware setup
+app.use('/uploads', express.static('uploads'));
+
+// Create uploads directory if it doesn't exist
+if (!fs.existsSync('uploads/links')) {
+    fs.mkdirSync('uploads/links', { recursive: true });
+}
+
+app.get('/link-dashboard', (req, res) => {
+  const filePath = path.resolve('public/linkDashboard.html');
+  res.sendFile(filePath);
+});
 
 // Start server
 

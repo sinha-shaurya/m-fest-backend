@@ -7,7 +7,7 @@ const linkSchema = new mongoose.Schema({
   },
   link: {
     type: String,
-    required: true
+    required: false
   },
   img: {
     type: String,

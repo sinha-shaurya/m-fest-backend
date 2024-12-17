@@ -22,22 +22,15 @@ const adminOptions = {
     {
       resource: User,
       options: {
-        listProperties: ['_id', 'name', 'email'], // Customize list view columns
-        filterProperties: ['name', 'email'], // Enable filtering on specific fields
+        listProperties: ['_id', 'name', 'email', 'type', 'isVerified', 'createdAt'],
+        filterProperties: ['name', 'email'],
       },
     },
     {
       resource: Coupon,
       options: {
         listProperties: ['_id', 'title', 'discountPercentage', 'validTill'],
-        filterProperties: ['title', 'discountPercentage', 'validTill'], // Enable filtering
-      },
-    },
-    {
-      resource: Link,
-      options: {
-        listProperties: ['_id', 'title', 'link', 'img'],
-        filterProperties: ['title', 'link'], // Enable filtering
+        filterProperties: ['title', 'discountPercentage', 'validTill'],
       },
     },
     {
