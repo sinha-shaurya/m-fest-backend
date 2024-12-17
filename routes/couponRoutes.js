@@ -20,8 +20,8 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 const router = express.Router();
 
 router.post('/create', authMiddleware, create);
-router.get('/getall', authMiddleware, getall);
-router.get('/get/:id', authMiddleware, getbyid);
+router.get('/getall', getall);
+router.get('/get/:id', getbyid);
 router.get('/availed', authMiddleware, getAvailedCoupon);
 router.get('/store-used-coupon', authMiddleware, storeUsedCoupon);
 router.get('/get-cities', authMiddleware, getAllCities);
