@@ -19,16 +19,16 @@ import authMiddleware from '../middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post('/create', authMiddleware, create);
-router.get('/getall', getall);
+// Public routes (no authentication required)
+router.get('/getall', authMiddleware, getall);
 router.get('/get/:id', getbyid);
+router.get('/get-cities', authMiddleware, getAllCities);
+
+// Protected routes (authentication required)
+router.post('/create', authMiddleware, create);
 router.get('/availed', authMiddleware, getAvailedCoupon);
 router.get('/store-used-coupon', authMiddleware, storeUsedCoupon);
-router.get('/get-cities', authMiddleware, getAllCities);
 router.delete('/delete/:id', authMiddleware, deleteCoupon);
-
-
-// updation 
 router.put('/toggle-active/:id', authMiddleware, toggleActive);
 router.put('/update/:id', authMiddleware, updateCoupon);
 router.put('/avail/:id', authMiddleware, availCoupon);

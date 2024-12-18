@@ -89,22 +89,30 @@ const getall = async (req, res) => {
 
     let filter = {};
 
-    // Filter for partner type
-    if (req.user.type === 'partner') {
-      const couponIdList = req.user.createdCouponsId;
-      filter._id = { $in: couponIdList };
-    } else {
-      // Filter by exact city if provided
-      if (city && city !== 'all') {
-        const usersInCity = await User.find({ 'data.shop_city': city });
-        const userIdsInCity = usersInCity.map(user => user._id);
-        filter.ownerId = { $in: userIdsInCity };
+    // If user is authenticated
+    if (req.user) {
+      // Filter for partner type
+      if (req.user.type === 'partner') {
+        const couponIdList = req.user.createdCouponsId;
+        filter._id = { $in: couponIdList };
       }
+    }
+
+    // Apply city filter for both authenticated and non-authenticated requests
+    if (city && city !== 'all') {
+      const usersInCity = await User.find({ 'data.shop_city': city });
+      const userIdsInCity = usersInCity.map(user => user._id);
+      filter.ownerId = { $in: userIdsInCity };
     }
 
     // Add a partial match filter for title if search text is provided
     if (search) {
       filter.title = { $regex: search, $options: 'i' }; // Case-insensitive partial match
+    }
+
+    // Only show active coupons for non-authenticated users
+    if (!req.user) {
+      filter.active = true;
     }
 
     // Fetch coupons based on filters
