@@ -22,7 +22,7 @@ const adminOptions = {
     {
       resource: User,
       options: {
-        listProperties: ['_id', 'name', 'email', 'type', 'isVerified', 'createdAt'],
+        listProperties: ['uid', 'name', 'email', 'type', 'isVerified', 'createdAt'],
         filterProperties: ['name', 'email'],
       },
     },
