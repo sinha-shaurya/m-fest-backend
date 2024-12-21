@@ -494,4 +494,26 @@ const getAllCities = async (req, res) => {
   }
 };
 
-export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone, getAllCities };
+const getCouponCount = async (req, res) => {
+  try {
+    // Get the user from the request (set by auth middleware)
+    const user = req.user;
+    
+    if (!user) {
+      return res.status(401).json({ message: 'User not authenticated' });
+    }
+
+    // Return the coupon count
+    res.status(200).json({ 
+      couponCount: user.couponCount,
+      message: 'Coupon count retrieved successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error fetching coupon count',
+      error: error.message
+    });
+  }
+};
+
+export { create, getall, deleteCoupon, getbyid, toggleActive, updateCoupon, availCoupon, updateCouponState, getAvailedCoupon, updateAmount, storeUsedCoupon, transferCoupon, transferCouponByPhone, getAllCities, getCouponCount };

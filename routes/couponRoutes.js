@@ -13,7 +13,8 @@ import {
     storeUsedCoupon,
     transferCoupon,
     transferCouponByPhone,
-    getAllCities
+    getAllCities,
+    getCouponCount
 } from '../controllers/couponController.js';
 import authMiddleware from '../middlewares/authMiddleware.js';
 
@@ -25,6 +26,7 @@ router.get('/get/:id', getbyid);
 router.get('/get-cities', authMiddleware, getAllCities);
 
 // Protected routes (authentication required)
+router.get('/coupon-count', authMiddleware, getCouponCount);
 router.post('/create', authMiddleware, create);
 router.get('/availed', authMiddleware, getAvailedCoupon);
 router.get('/store-used-coupon', authMiddleware, storeUsedCoupon);
