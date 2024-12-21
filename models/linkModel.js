@@ -13,6 +13,11 @@ const linkSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  location: {
+    type: String,
+    required: true,
+    default: 'all'  // Default value for links that should appear everywhere
+  },
   display:{
     type: Boolean,
     default: false

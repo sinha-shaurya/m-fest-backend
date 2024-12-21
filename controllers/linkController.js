@@ -14,7 +14,8 @@ const createLink = async (req, res) => {
         const newLink = new Link({
             title: req.body.title,
             img: imageUrl,
-            display: req.body.display === 'true'
+            display: req.body.display === 'true',
+            location: (req.body.location || 'all').toLowerCase()
         });
 
         if (req.body.link) {
@@ -38,7 +39,20 @@ const createLink = async (req, res) => {
 // Get all links
 const getAllLinks = async (req, res) => {
     try {
-        const links = await Link.find();
+        const { city } = req.query;
+        let query = {};
+
+        if (city && city.toLowerCase() !== 'all') {
+            // If city is specified, find links only for that city
+            query = {
+                location: new RegExp(city, 'i') // Case-insensitive partial match
+            };
+        } else {
+            // If no city specified or city is 'all', show all links
+            query = {};
+        }
+
+        const links = await Link.find(query);
         res.status(200).json(links);
     } catch (error) {
         res.status(500).json({
@@ -74,16 +88,17 @@ const updateLink = async (req, res) => {
 
         let updateData = {
             title: req.body.title,
-            display: req.body.display === 'true'
+            display: req.body.display === 'true',
+            location: (req.body.location || link.location).toLowerCase()
         };
 
         if (req.body.link) {
             updateData.link = req.body.link;
         }
 
-        // If new image is uploaded
+        // Only handle image update if a new file is uploaded
         if (req.file) {
-            // Delete old image
+            // Delete old image only if new one is being uploaded
             const oldImagePath = link.img.split('/uploads/links/')[1];
             if (oldImagePath) {
                 const fullPath = path.join('uploads/links', oldImagePath);
@@ -95,6 +110,7 @@ const updateLink = async (req, res) => {
             // Add new image URL
             updateData.img = `${req.protocol}://${req.get('host')}/uploads/links/${req.file.filename}`;
         }
+        // If no new image is uploaded, keep the existing image URL
 
         const updatedLink = await Link.findByIdAndUpdate(
             req.params.id,
